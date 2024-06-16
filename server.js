@@ -60,7 +60,7 @@ const puppeteer = require('puppeteer');
     const page = await browser.newPage();
 
     // Set the content of the page
-    await page.setContent(htmlContent, { waitUntil: 'networkidle0' });
+    await page.setContent(htmlContent);
 
     // Define the PDF options
     const pdfOptions = {
