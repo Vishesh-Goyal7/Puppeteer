@@ -1,79 +1,29 @@
-const fs = require('fs');
-const puppeteer = require('puppeteer');
+const puppet = require('puppeteer')
 
-(async () => {
-    // Read the JSON file
-    const data = JSON.parse(fs.readFileSync('/Users/visheshgoyal/JavaScript WebDev/NodeJs/ServerTest/TestData.json', 'utf8'));
+async function htmlToPdf(target, dest){
+    try{
+        
+        const browser = await puppet.launch({headless:"new"})
+        const page = await browser.newPage()
+        await page.goto(target, {waitUntil:"networkidle0"})
+        await page.pdf({
+            path: dest,
+            format: "A4",
+            printBackground: true
+        })
 
-    // HTML content with a table for user data
-    let htmlContent = `
-        <html>
-        <head>
-            <title>${data.title}</title>
-            <style>
-                table {
-                    width: 100%;
-                    border-collapse: collapse;
-                }
-                table, th, td {
-                    border: 1px solid black;
-                }
-                th, td {
-                    padding: 8px;
-                    text-align: left;
-                }
-            </style>
-        </head>
-        <body>
-            <h1>${123}</h1>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Id</th>
-                    </tr>
-                </thead>
-                <tbody>
-    `;
+        await browser.close()
 
-    // Populate table rows with user data
-    data.forEach(user => {
-        htmlContent += `
-            <tr>
-                <td>${user.name}</td>
-                <td>${user.id}</td>
-            </tr>
-        `;
-    });
+    } catch(err){
+        console.log(err);
+    }
+}
 
-    htmlContent += `
-                </tbody>
-            </table>
-        </body>
-        </html>
-    `;
+const target = "https://github.com/Vishesh-Goyal7/MongooseAPI"
+const dest = "/Users/visheshgoyal/JavaScript WebDev/Puppeteer/output.pdf"
 
-    // Launch a headless browser
-    const browser = await puppeteer.launch();
-
-    // Open a new page
-    const page = await browser.newPage();
-
-    // Set the content of the page
-    await page.setContent(htmlContent);
-
-    // Define the PDF options
-    const pdfOptions = {
-        path: 'output.pdf', // Path to save the PDF file
-        format: 'A4', // Format of the PDF
-        printBackground: true // Print background graphics
-    };
-
-    // Convert the page to PDF
-    await page.pdf(pdfOptions);
-
-    // Close the browser
-    await browser.close();
-
-    console.log('PDF generated successfully!');
-})();
+htmlToPdf(target, dest).then(() => {
+    console.log(`Pdf created successfully`);
+}).catch((error) => {
+    console.log(error);
+})
